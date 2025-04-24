@@ -1,0 +1,145 @@
+# sites/pornhub.yaml
+
+name: PornHub
+shortcode: ph
+domain: PornHub.com
+base_url: "https://www.pornhub.com"
+selector_style: css
+no_overwrite: true
+use_selenium: true
+download:
+  method: "yt-dlp"
+url_encoding_rules:
+  " ": "+"
+  "%20": "+"
+
+modes:
+  video:
+    url_pattern: "/view_video.php?viewkey={video}"
+    scraper: video_scraper
+    tip: "Download video with identifier"
+    examples:
+      - "ph632c32fa34220"
+  model:
+    url_pattern: "/model/{model}/videos"
+    url_pattern_pages: "/model/{model}/videos?page={page}"
+    scraper: list_scraper
+    tip: "Download videos featuring model"
+    note: "Models are typically less established than pornstars"
+    examples:
+      - "Owl Crystal"
+      - "Matty Mila Perez"
+      - "Belle Delphine"
+      - "Solazola"
+      - "MariMoore"
+  category:
+    url_pattern: "/categories/{category}"
+    url_pattern_pages: "/categories/{category}?page={page}" 
+    scraper: list_scraper
+    tip: "Download videos under category"
+    note: "Most categories are not accessible this way and only accessible using the seperate tag mode"
+    examples:
+      - "Babe"
+      - "College"
+  tag:
+    url_pattern: "/video?c={tag}"
+    url_pattern_pages: "/video?c={tag}&page={page}"
+    scraper: list_scraper
+    tip: "Download videos under tag number"
+    note: "You will need to look up the number at pornhub.com/categories"
+    examples:
+      - "3"   # amateur
+      - "59"  # small tits
+      - "138" # verified amateurs
+  studio:
+    url_pattern: "/channels/{studio}"
+    url_pattern_pages: "/channels/{studio}/videos?page={page}"
+    scraper: list_scraper
+    url_encoding_rules:
+      " ": "-"
+      "%20": "-"
+    tip: "Download videos from studio"
+    examples:
+      - "TeamSkeet"
+      - "Pure Taboo"
+  search:
+    url_pattern: "/video/search?search={search}"
+    url_pattern_pages: "/video/search?search={search}&page={page}"
+    scraper: list_scraper
+    tip: "Download videos from search results"
+    examples:
+      - "Sexy Hot Blonde"
+      - "Shower Sex"
+      - "Family Creampie"
+      - "18 Years Old"
+      - "Hard Rough Sex"
+  pornstar:
+    url_pattern: "/pornstar/{pornstar}/videos/upload"
+    url_pattern_pages: "/pornstar/{pornstar}/videos/upload?page={page}"
+    scraper: list_scraper
+    tip: "Download videos featuring pornstar"
+    url_encoding_rules:
+      " ": "-"
+      "%20": "-"
+    note: "Pornstars are typically more established than models"
+    examples:
+      - "Massy Sweet"
+      - "MySweetApple"
+      - "Reyna Delacruz"
+
+scrapers:
+  video_scraper:
+    title:
+      selector: "h1"
+    download_url:
+      selector: "meta[property='og:video']"
+      attribute: "content"
+    date:
+      selector: "script:contains('VideoObject')"
+      postProcess:
+        - replace:
+            - regex: '.*"uploadDate":\s*"([^T]+).*'
+              with: "\\1"
+        - parseDate: "%Y-%m-%d"
+    code:
+      selector: "meta[property='og:url']"
+      attribute: "content"
+      postProcess:
+        - replace:
+            - regex: ".*viewkey=([^&]+).*"
+              with: "\\1"
+    tags:
+      selector: "div.video-detailed-info a[data-label='category'], div.video-detailed-info a[data-label='tag']"
+    actors:
+      selector: "div.video-detailed-info a[data-label='pornstar'], div.video-detailed-info span.usernameBadgesWrapper a"
+    image:
+      selector: "meta[property='og:image']"
+      attribute: "content"
+    studios:
+      selector: "div.videoWrapModelInfo div.usernameWrap a.bolded"
+
+  list_scraper:
+    video_container:
+      selector:
+        - "ul#mostRecentVideosSection"
+        - "ul#videoSearchResult"
+        - "ul#pornstarsVideoSection"
+        - "ul.pornstarsVideos"
+        - "ul.mostRecentPornstarVideos"
+        - "ul#claimedRecentVideoSection"
+        - "ul#moreData"
+        - "ul.mostRecentVideosSection"
+        - "ul.videos"
+        - "ul[class*='videos']"
+        - "div.video-wrapper"
+    video_item:
+      selector: "li.pcVideoListItem"
+      fields:
+        video_key:
+          attribute: "data-video-vkey"
+        title:
+          selector: "span.title a"
+          attribute: "title"
+        url:
+          selector: "a.linkVideoThumb"
+          attribute: "href"
