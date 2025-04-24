@@ -1,0 +1,93 @@
+# sites/familysex.yaml
+
+name: "Family Sex"
+shortcode: fs
+domain: "Family-Sex.me"
+base_url: "https://family-sex.me"
+selector_style: css
+no_overwrite: true
+use_selenium: true
+download:
+  method: "wget"
+url_encoding_rules:
+  " ": "-"
+  "%20": "-"
+note: "Family-Sex.me generally isn't the best choice for content that can be found elsewhere. Many of the videos are only short excerpts and/or very low quality. But it's notable for hosting authentic homemade videos you're unlikely to find elsewhere."
+
+modes:
+  video:
+    url_pattern: "/vids/{video}.html"
+    scraper: video_scraper
+    tip: "Download video with identifier"
+    examples:
+      - "fucking-my-stepdaughter"
+      - "teen-slut-in-threesome-with-step-bros"
+  tag:
+    url_pattern: "/porn/{tag}.html"
+    url_pattern_pages: "/porn/{tag}-{page}.html"
+    max_pages: 999
+    scraper: list_scraper
+    url_encoding_rules:
+      " ": ""
+      "%20": ""
+    tip: "Download videos with tag"
+    examples:
+      - "Teen"
+      - "Homemade"
+      - "Amateur"
+      - "Old Young"
+      - "Petite"
+  search:
+    scraper: list_scraper
+    url_pattern: "/search/{search}/"
+    url_encoding_rules:
+      " ": "%20"
+      "%20": "%20"
+    tip: "Download videos from search results"
+    examples:
+      - "Naughty little sister"
+  model:
+    scraper: list_scraper
+    url_pattern: "/pornstar/{model}.html"
+    url_pattern_pages: "/pornstar/{model}-{page}.html"
+    max_pages: 999
+    tip: "Download videos featuring model"
+    examples:
+      - "Odette Delacroix"
+      - "Nella Jones"
+      - "Sophia Burns"
+      - "Jane Wilde"
+    
+
+scrapers:
+  video_scraper:
+    title:
+      selector: "aside.cvmoplc h1"
+    download_url:
+      iframe: "div.cvmkesh iframe"
+      selector: "div#kt_player video"
+      attribute: "src"
+    studios:
+      selector: "aside.cvmcaun.cvmtiv a[rel='nofollow']"
+    actors:
+      selector: "aside.cvmcaun:contains('Starring:') p a"
+    description:
+      selector: "aside.cvmcaun.cvmoplc.de h2"
+    tags:
+      selector: "aside.cvmcaun:contains('Related Tags:') p a"
+    image:
+      selector: "meta[property='og:image']"
+      attribute: "content"
+
+  list_scraper:
+    video_container:
+      selector:
+        - "div.cvmthumbz"
+    video_item:
+      selector: "a[target='_self'].v"
+      fields:
+        url:
+          attribute: "href"
+        title:
+          selector: "img"
+          attribute: "alt"

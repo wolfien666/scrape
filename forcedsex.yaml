@@ -1,0 +1,64 @@
+name: ForcedSex
+shortcode: fsx
+domain: forcedsex.org
+base_url: "https://forcedsex.org"
+selector_style: css
+no_overwrite: true
+# use_selenium: true
+# unique_name: true
+
+url_encoding_rules:
+  " ": "-"
+  "%20": "-"
+
+modes:
+  video:
+    url_pattern: "/{any}-{video}.html"
+    scraper: video_scraper
+    tip: ""
+    examples:
+      - "some-video-slug"
+  all:
+    url_pattern: "/"
+    url_pattern_pages: "/{page}/"
+    scraper: list_scraper
+    max_pages: 999
+    tip: "Download videos starting from a page number (1 is root)"
+    examples:
+      - "1"
+      - "5"
+
+download:
+  method: "yt-dlp"
+
+scrapers:
+  list_scraper:
+    video_container:
+      selector:
+        - "div.thumbs"
+    video_item:
+      selector: "a"
+      fields:
+        url:
+          attribute: "href"
+
+  video_scraper:
+    title:
+      selector: "head title"
+      postProcess:
+        - replace:  # Clean up " - ForcedSex" from title if present
+            - regex: "\\s*-\\s*ForcedSex\\s*"
+              with: ""
+      default: "Video {random.randint(10000, 99999)}"  # Matches script fallback
+    # download_url:
+      # selector: "div.playerArea video"
+      # attribute: "src"
+#      postProcess:
+#        - replace:  # Handle relative URLs (if any)
+#            - regex: "^(?!https?:)"
+#              with: "https://forcedsex.org/"
+#        - replace:  # Direct swap per your working script
+#            - regex: "https://media\\.forcedsex\\.org/"
+#              with: "https://v1.rfsstaic.com/forcedsex.org/"
+
+name_suffix: " - ForcedSex"  # Matches script’s title formatting

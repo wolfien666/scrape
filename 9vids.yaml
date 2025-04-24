@@ -1,0 +1,71 @@
+# sites/9vids.yaml
+
+name: 9Vids
+shortcode: 9v
+domain: 9Vids.com
+base_url: "https://9vids.com"
+selector_style: css
+no_overwrite: true
+use_selenium: true
+download:
+  method: "requests"
+url_encoding_rules:
+  " ": "-"
+  "%20": "-"
+name_suffix: " - 9vids"
+note: "9Vids boasts having the \"best incest porn on the net!\" Crowded field, sure, but it's certainly a contender. Don't come here looking for studio-made fauxcest—there are much better mainstream tube sites for that. But there are rare vintage and homemade gems to be found among the massive number of user uploads. Just plan on filtering through a lot of low-quality content in order to find them."
+
+modes:
+  video:
+    url_pattern: "/{video}"
+    scraper: video_scraper
+    tip: "Download video with identifier"
+    examples:
+      - "sister-with-small-tits-fucked-by-brother"
+      - "flat-chested-sister-fucked-and-covered-in-cum"
+      - "siblings-caught-their-parents-fucking"
+      - "real-incest-family-mother-daughter-and-son"
+      - "skinny-teenage-daughter-gives-her-father-a-blowjob"
+  search:
+    url_pattern: "/?s={search}"
+    scraper: list_scraper
+    url_encoding_rules:
+      " ": "+"
+      "%20": "+"
+    tip: "Download videos from search results"
+    examples:
+      - "Mom dad daughter"
+      - "Skinny daughter"
+  tag:
+    url_pattern: "/tag/{tag}"
+    scraper: list_scraper
+    tip: "Download videos with tag"
+    examples:
+      - "Real Incest"
+      - "True Incest"
+      - "Homemade"
+
+scrapers:
+  video_scraper:
+    title:
+      selector: "meta[itemprop='name']"
+      attribute: "content"
+    download_url:
+      selector: "meta[itemprop='contentURL']"
+      attribute: "content"
+    tags:
+      selector: "div.tags-list a.label" # Targets all tag links
+
+  list_scraper:
+    video_container:
+      selector:
+        - "body"
+    video_item:
+      selector: "div.video-block.thumbs-rotation"
+      fields:
+        url:
+          selector: "a.infos"
+          attribute: "href"
+        title:
+          selector: "a.infos"
+          attribute: "title"

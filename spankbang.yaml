@@ -1,0 +1,88 @@
+# sites/spankbang.yaml
+
+name: SpankBang
+shortcode: sb
+domain: SpankBang.com
+base_url: "https://spankbang.com"
+selector_style: css
+no_overwrite: true
+use_selenium: false
+download:
+  method: "yt-dlp"
+url_encoding_rules:
+  " ": "+"
+  "%20": "+"
+
+modes:
+  video:
+    url_pattern: "/{any}/video/{video}"
+    scraper: video_scraper
+    tip: "Download video with identifier"
+    examples:
+      - "taboo+mom+son+bath"
+  model:
+    url_pattern: "/pornstar/{model}/"
+    url_pattern_pages: "/pornstar/{model}/{page}/"
+    max_pages: 999
+    scraper: list_scraper
+    tip: "Download videos featuring model"
+    examples:
+      - "Dakota Tyler"
+      - "Kylie Quinn"
+      - "Piper Fawn"
+      - "Pristine Edge"
+      - "Vera King"
+  search:
+    url_pattern: "/s/{search}/?o=all/"
+    url_pattern_pages: "/s/{search}/{page}/?o=all/"
+    max_pages: 999
+    scraper: list_scraper
+    tip: "Download videos from search results"
+    examples:
+      - "Vintage taboo"
+      - "Rough doggystyle"
+      - "Young daughter"
+  tag:
+    url_pattern: "/s/{tag}/?o=all/"
+    url_pattern_pages: "/s/{tag}/{page}/?o=all/"
+    max_pages: 999
+    scraper: list_scraper
+    tip: "Download videos with tag"
+    examples:
+      - "Small Tits"
+      - "Family"
+      - "Cumshot"
+
+scrapers:
+  video_scraper:
+    title:
+      selector: "h1.main_content_title"
+    download_url:
+      selector: "meta[property='og:video']"
+      attribute: "content"
+    actors:
+      selector: "div.video-info p.name a[href*='/pornstar/']"
+    tags:
+      selector: "div.tags a[href*='/tag/']"
+    description:
+      selector: "div.description"
+
+  list_scraper:
+    video_container:
+      selector:
+        - "div.video-list.video-rotate.with-ads.four-col"
+        - "div.video-list.video-rotate.video-list-with-ads"
+    video_item:
+      selector: "div.video-item"
+      fields:
+        url:
+          selector: "a.thumb"
+          attribute: "href"
+        title:
+          selector: "p.name a"
+        video_key:
+          selector: "a.thumb"
+          attribute: "href"
+          pattern: "/([^/]+)/video/"
+
+name_suffix: " - SpankBang"

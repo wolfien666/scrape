@@ -1,0 +1,113 @@
+# sites/xnxx.yaml
+
+name: XNXX
+shortcode: xn
+domain: XNXX.com
+base_url: "https://www.xnxx.com"
+selector_style: css
+no_overwrite: true
+use_selenium: true
+download:
+  method: "yt-dlp"
+url_encoding_rules:
+  " ": "-"
+  "%20": "-"
+
+modes:
+  video:
+    url_pattern: "/{video}/"
+    scraper: video_scraper
+    tip: "Download video with identifier"
+    examples:
+      - "taboo_sex_with_fit_good_looking_mom"
+  search:
+    scraper: list_scraper
+    url_pattern: "/search/{search}"
+    url_pattern_pages: "/search/{search}/{page - 1}" # setback needed
+    url_encoding_rules:
+      " ": "+"
+      "%20": "+"
+    tip: "Download videos from search results"
+    examples:
+      - "Russian homemade"
+      - "Skinny girl tied up"
+      - "Sister lost bet"
+  model:
+    scraper: list_scraper
+    url_pattern: "/pornstar/{model}"
+    url_pattern_pages: "/pornstar/{model}#_videos,page-{page}"
+    tip: "Download videos featuring model"
+    examples:
+      - "Ohana Petite"
+      - "Naomi Woods"
+      - "Kaylee Jewell"
+      - "Kirsten Lee"
+  tag:
+    scraper: list_scraper
+    url_pattern: "/search/{tag}"
+    url_pattern_pages: "/search/{tag}/{page - 1}" # setback needed
+    url_encoding_rules:
+      " ": "+"
+      "%20": "+"
+    tip: "Download videos with tag"
+    examples:
+      - "Teen pigtails"
+      - "Young petite porn"
+      - "Screaming"
+  studio:
+    scraper: list_scraper
+    url_pattern: "/porn-maker/{studio}"
+    url_pattern_pages: "/porn-maker/{studio}#_videos,page-{page}"
+    tip: "Download videos from studio"
+    examples:
+      - "FAPADOO"
+      - "Alex Adams"
+      - "Young Libertines"
+      - "PrettyDirty"
+
+scrapers:
+  video_scraper:
+    title:
+      selector: "div.video-title strong"
+    tags:
+      selector: "div.metadata-row.video-tags a.is-keyword"
+      postProcess:
+        - replace:
+            - regex: "Edit tags and models"
+              with: ""
+    actors:
+      selector: "div.metadata-row.video-tags a.is-pornstar"
+    studios:
+      selector: "span.metadata a.gold-plate, span.metadata a.free-plate"
+    description:
+      selector: "p.metadata-row.video-description"
+      postProcess:
+        - replace:
+            - regex: "^\\+More videos like this one at .*?\n"
+              with: ""
+    date:
+      selector: "script[type='application/ld+json']"
+      postProcess:
+        - replace:
+            - regex: '.*"uploadDate":\s*"([^"]+)".*'
+              with: "\\1"
+        - parseDate: "%Y-%m-%dT%H:%M:%S%z"
+    image:
+      selector: "script:contains('setThumbUrl169')"
+      postProcess:
+        - replace:
+            - regex: ".*setThumbUrl169\\(['\"]([^'\"]+)['\"]\\).*"
+              with: "\\1"
+
+  list_scraper:
+    video_container:
+      selector:
+        - "div#psvideos div.mozaique.cust-nb-cols"
+        - "div#content-thumbs div.mozaique.cust-nb-cols"
+    video_item:
+      selector: "div.thumb-under a"
+      fields:
+        url:
+          attribute: "href"
+        title:
+          attribute: "title"

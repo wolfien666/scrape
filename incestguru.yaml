@@ -1,0 +1,74 @@
+# sites/incestguru.yaml
+
+name: IncestGuru
+shortcode: ig
+domain: Incest.Guru
+base_url: "https://incest.guru"
+selector_style: css
+no_overwrite: true
+download:
+  method: "requests"
+url_encoding_rules:
+  " & ": "/and/"
+  "&": "/and/"
+  " ": "-"
+  "%20": "-"
+note: "If you can deal with omnipresent watermarks and IncestGuru-branded opening and closing title slates on every single video, this is a great site. Recently content from certain studios has disappeared from the site, but it remains a treasure for full studip productions and indie/amateur self-produced content alike. It has its quirks. Beyond the aforementioned watermarks and title slates, videos are often broken up into multiple parts, and the tags can seem obtuse until you comprehend how committed this site is to taboo. What is \"FDAA\", you may wonder? Videos featuring a father, daughter, and two aunts. OBVIOUSLY. \"GMMS\"? Grandmother/Mother/Son videos, of course. In short, Rule 34 as applied to incest."
+
+modes:
+  video:
+    url_pattern: "/watch/{video}"
+    scraper: video_scraper
+    tip: "Download video with identifier"
+    examples:
+      - "kimmy-granger-brutal-x-twerk-slut-fucked"
+      - "chloe-night-slutty-sisters-shower-seduction"
+      - "mandy-flores-mom-son-awesome-art-project"
+  tag:
+    url_pattern: "/tag/{tag}"
+    url_pattern_pages: "/tag/{tag}/page/{page}"
+    max_pages: 999
+    scraper: list_scraper
+    tip: "Download videos with specific tag(s)"
+    note: "Tags can be a performer or studio, family relationship (BS for brother/sister, MSD for mother/son/daughter, etc.), sex act (doggystyle, creampie), or other quality (dirty talk, reluctant, etc.). Combine two tags with \" & \" for a compound query."
+    examples:
+      - "Kirsten Lee"
+      - "Jodi West"
+      - "Naomi Swann"
+      - "Kimmy Granger & BrutalX"
+      - "Sweet Nymph & Bondage"
+      - "Creampie & Mother"
+      - "Reluctant & MSD"
+
+scrapers:
+  video_scraper:
+    title:
+      selector: "div#incflix-videowrap h2"
+    download_url:
+      selector: "div#incflix-stream source"
+      attribute: "src"
+    tags:
+      selector: "div#videotags a.studiolink3, div#videotags a.studiolink4, div#videotags a.studiolink0"
+    actors:
+      selector: "div#videotags a.studiolink1"
+    studios:
+      selector: "div#videotags a.studiolink2"
+    image:
+      selector: "video#incflix-player"
+      attribute: "poster"
+      postProcess:
+        - replace:
+            - regex: "^//"
+              with: "http://"
+
+  list_scraper:
+    video_container:
+      selector:
+        - "body"
+    video_item:
+      selector: "a#videolink"
+      fields:
+        url:
+          attribute: "href"
+        title:
+          selector: "a#videolink"

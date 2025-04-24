@@ -1,0 +1,120 @@
+# sites/familypornhd.yaml
+
+name: FamilyPornHD
+shortcode: fphd
+domain: FamilyPornHD.com
+base_url: "https://familypornhd.com"
+selector_style: css
+no_overwrite: true
+use_selenium: true
+m3u8_mode: true
+download:
+  method: "ffmpeg"
+url_encoding_rules:
+  " ": "-"
+  "%20": "-"
+note: "FamilyPornHD.com is frustratingly inconsistent. When it works, it is second to none—complete unabridged multi-gig videos in 1080p and even 4K, without watermarks. I'm unaware of another source outside of torrents for porn this high quality. But many of the listed videos are simply unavailable, and some that are available in your browser still cannot be scraped because of unusually strong counter-measures. For now consider FPHD partially supported, and a high priority for expanded support."
+
+modes:
+  video:
+    url_pattern: "/{video}/"
+    scraper: video_scraper
+    tip: "Download video with identifier"
+    examples:
+      - "dream-come-true"
+      - "playing-with-cute-step-sister"
+  tag:
+    url_pattern: "/tag/{tag}/"
+    url_pattern_pages: "/tag/{tag}/page/{page}"
+    max_pages: 999
+    scraper: list_scraper
+    tip: "Download videos with tag"
+    examples:
+      - "Small tits"
+      - "Doggystyle"
+  model:
+    url_pattern: "/tag/{model}/"
+    url_pattern_pages: "/tag/{model}/page/{page}"
+    max_pages: 999
+    scraper: list_scraper
+    tip: "Download videos featuring model"
+    examples:
+      - "Kylie Quinn"
+      - "Kyler Quinn"
+      - "Mackenzie Mace"
+  search:
+    url_pattern: "/?s={search}"
+    url_pattern_pages: "/page/{page}/?s={search}"
+    max_pages: 999
+    scraper: list_scraper
+    url_encoding_rules:
+      " ": "+"
+      "%20": "+"
+    tip: "Download videos from search results"
+    examples:
+      - "Siblings in love"
+      - "Family threesome"
+  studio:
+    url_pattern: "/tag/{studio}"
+    url_pattern_pages: "/tag/{studio}/{page}/"
+    max_pages: 99
+    scraper: list_scraper
+    tip: "Download videos from studio"
+    examples:
+      - "Perv Therapy"
+      - "PrincessCum"
+  rss:
+    url_pattern: "/feed/"
+    scraper: rss_scraper
+    tip: "Download all videos from the site-wide RSS feed, starting with the oldest"
+    examples:
+      - ""  # No query needed for site-wide feed
+
+scrapers:
+  video_scraper:
+    title:
+      selector: "ol[itemtype='http://schema.org/BreadcrumbList'] li:last-child span[itemprop='name']"
+    download_url:
+      iframe: "iframe"
+    studios:
+      selector: "ol[itemtype='http://schema.org/BreadcrumbList'] li:nth-child(2) span[itemprop='name']"
+    actors:
+      selector: "div.g1-content-narrow p.has-text-align-center a[href*='/tag/']:not(:has(strong))"
+    description:
+      selector: "div.g1-content-narrow p.has-text-align-center:nth-of-type(2)"
+    tags:
+      selector: "p.entry-tags a.entry-tag"
+
+  list_scraper:
+    video_container:
+      selector:
+        - "ul.g1-collection-items"
+    video_item:
+      selector: "li.g1-collection-item article h3.entry-title a"
+      fields:
+        url:
+          attribute: "href"
+        title: {}
+
+  rss_scraper:
+    video_container:
+      selector: "item"
+    video_item:
+      selector: "item"  # Each <item> is a video entry
+      fields:
+        url:
+          selector: "link"  # Direct <link> tag for video URL
+        title:
+          selector: "title"  # Direct <title> tag
+        description:
+          selector: "description"  # Direct <description> tag
+        actors:
+          selector: "content|encoded"  # Use '|' for namespace prefix
+          postProcess:
+            - replace:
+                - regex: ".*Pornstar: <strong><a href=\"/tag/[^\"]+\">([^<]+)</a></strong>.*"
+                  with: "$1"
+        studios:
+          selector: "category"
+        tags:
+          selector: "category"

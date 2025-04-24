@@ -1,0 +1,95 @@
+# sites/xvideos.yaml
+# Work in progress; need to add more metadata scrapers/selectors
+
+name: XVideos
+shortcode: xv
+domain: xvideos.com
+base_url: "https://www.xvideos.com"
+selector_style: css
+no_overwrite: true
+use_selenium: false
+download:
+  method: "yt-dlp"
+url_encoding_rules:
+  " ": "-"
+  "%20": "-"
+
+modes:
+  video:
+    url_pattern: "/video.{any}/{video}"
+    scraper: video_scraper
+    example: "cheating_college_girlfriend_fucked_on_snapchat_to_pay_debt_-_cucked_and_cummed_on"
+    
+  search:
+    url_pattern: "/?k={search}"
+    url_pattern_pages: "/?k={search}&p={page}"
+    scraper: list_scraper
+    tip: "Download videos from search results"
+    examples:
+      - "Mom dad daughter"
+  studio:
+    url_pattern: "/{studio}#_tabVideos"
+    url_pattern_pages: "/{studio}#_tabVideos,page-{page}"
+    scraper: list_scraper
+    tip: "Download videos from studio"
+    examples:
+      - "TeamSkeet"
+      - "BareBackStudios"
+      - "LethalHardcore"
+  model:
+    url_pattern: "/models/{model}#_tabVideos"
+    url_pattern_pages: "/models/{model}#_tabVideos,page-{page}"
+    scraper: list_scraper
+    tip: "Download videos featuring model"
+    examples:
+      - "Kit Mercer"
+      - "Melody Marks"
+      - "Molly Little"
+      - "Ohana Petite"
+      - "Pristine Edge"
+  tag:
+    url_pattern: "/tags/{tag}"
+    url_pattern_pages: "/tags/{tag}/{page}"
+    scraper: list_scraper
+    tip: "Download videos with tag"
+    examples:
+      - "Rough"
+      - "Mommy"
+      - "Deflowered"
+      - "Girl Enjoying Sex"
+      - "Reverse Cowgirl"
+      - "Tiny Tits Porn"
+  playlist:
+    url_pattern: "/favorite/{any}/{playlist}"
+    url_pattern_page: "/favorite/{playlist}/{page}"
+    scraper: list_scraper
+    tip: "Download videos from playlist"
+    examples:
+      - "step"
+
+scrapers:
+  video_scraper:
+    title:
+      selector: "head title"
+    studios:
+      selector: "div.video-metadata li.main-uploader a span.name"
+    actors:
+      selector: "div.video-metadata li.model a span.name"
+    tags:
+      selector: "div.video-metadata li a[href^=\"/tags/\"]"
+
+  list_scraper:
+    video_container:
+      selector:
+        - "div.mozaique.cust-nb-cols"
+    video_item:
+      selector: "div.thumb-under a"
+      fields:
+        url:
+          attribute: "href"
+        title:
+          selector: "div.thumb-under a"
+    pagination:
+      next_page:
+        selector: "a.page-link.next-page"
+        attribute: "href"

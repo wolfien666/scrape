@@ -1,0 +1,62 @@
+# sites/lonefun.yml
+
+name: LoneFun
+shortcode: lf
+domain: LoneFun.com
+base_url: "https://lonefun.com"
+selector_style: css
+no_overwrite: true
+download:
+  method: "requests"
+name_suffix: " - LONEFUN"
+note: ""
+
+modes:
+  video:
+    url_pattern: "/watch/{video}"
+    scraper: video_scraper
+    tip: "Download video with identifier"
+    examples:
+      - "real-incest-mom-jerks-off-son_3UqzBD5TZFbtfOt"
+      - "bro-sis-fucking-after-church_jl874VUHpYezFId"
+  search:
+    url_pattern: "/search?keyword={search}"
+    url_pattern_pages: "/search?keyword={search}&page_id={page}"
+    max_pages: 999
+    scraper: list_scraper
+    tip: "Download videos from search results"
+    examples:
+      - "Real Incest"
+      - "Mom"
+
+scrapers:
+  video_scraper:
+    title:
+      selector: "h2.tag_video_title"
+    download_url:
+      selector: "video source"
+      attribute: "src"
+    description:
+      selector: "meta[name='description']"
+      attribute: "content"
+    tags:
+      selector: "meta[name='keywords']"
+      attribute: "content"
+
+  list_scraper:
+    video_container:
+      selector:
+        - "div.row.tag_video_grid.author-list.videos-latest-list"
+    video_item:
+      selector: "div.video-list.tag_video_grid_list"
+      fields:
+        url:
+          selector: "a.position-relative.d-block.thumb"
+          attribute: "href"
+        title:
+          selector: "h4 a"
+        views:
+          selector: "div.foot"
+          regex: '(\d+,?\d*)\s+Views'
+        duration:
+          selector: "div.duration"

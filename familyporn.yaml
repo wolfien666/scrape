@@ -1,0 +1,89 @@
+# sites/familyporn.yaml
+
+name: FamilyPorn
+shortcode: fptv
+domain: FamilyPorn.tv
+base_url: "https://familyporn.tv"
+selector_style: css
+no_overwrite: true
+use_selenium: true
+download:
+  method: "requests"
+url_encoding_rules:
+  " ": "-"
+  "%20": "-"
+note: ""
+
+modes:
+  video:
+    url_pattern: "/videos/{video}/"
+    scraper: video_scraper
+    tip: "Download video with identifier"
+    examples:
+      - "best-left-unspoken-part-one"
+      - "the-most-romantic-incest"
+  model:
+    scraper: list_scraper
+    url_pattern: "/models/{model}/"
+    tip: "Download videos featuring model"
+    examples:
+      - "Harmony Wonder"
+      - "Ashley Fires"
+      - "Vera King"
+      - "Kenna James"
+  tag:
+    scraper: list_scraper
+    url_pattern: "/categories/{tag}/"
+    tip: "Download videos under tag"
+    examples:
+      - "Brother Sister"
+      - "Mother Son"
+      - "Dad Daughter"
+  search:
+    scraper: list_scraper
+    url_pattern: "/search/{search}/"
+    max_pages: 999
+    tip: "Download videos from search results"
+    examples:
+      - "Siblings secretly fuck"
+      - "Rough doggystyle"
+  studio:
+    scraper: list_scraper
+    url_pattern: "/sites/{studio}"
+    tip: "Download videos from studio"
+    examples:
+      - "MyFamilyPies"
+      - "MomsTeachSex"
+      - "DadCrush"
+
+scrapers:
+  video_scraper:
+    title:
+      selector: "head title"
+    download_url:
+      selector: "#kt_player > div.fp-player > video"
+      attribute: "src"
+    studios:
+      selector: "div.video-info div.holder div.item a.site div.text"
+    actors:
+      selector: "div.video-info div.holder div.item div.star a.link"
+    description:
+      selector: "div.description div.player-text"
+    tags:
+      selector: "ul.details-tags li.item a.link span.text, ul.top-tags li.item a.link span.text"
+
+  list_scraper:
+    video_container:
+      selector:
+        - "#list_videos_videos_list_search_result_items"
+        - "#list_videos_common_videos_list_items"
+    video_item:
+      selector: "li.item > div.thumb-horizontal > a.link"
+      fields:
+        url:
+          attribute: "href"
+        title: {}
+    pagination:
+      next_page:
+        selector: "ul.pagination li.next a.primary-link"
+        attribute: "data-parameters"

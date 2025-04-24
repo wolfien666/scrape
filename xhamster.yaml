@@ -1,0 +1,104 @@
+# sites/xhamster.yaml
+
+name: xHamster
+shortcode: xh
+domain: xHamster.com
+base_url: "https://xhamster.com"
+selector_style: css
+no_overwrite: true
+use_selenium: true
+download:
+  method: "yt-dlp"
+url_encoding_rules:
+  " ": "-"
+  "%20": "-"
+
+modes:
+  video:
+    url_pattern: "/videos/{video}"
+    scraper: video_scraper
+    tip: "Download video with identifier"
+    examples:
+      - "like-mother-like-daughter-12973220"
+      - "family-12900151"
+      - "daddy-daughter-compilation-2-14879275"
+  model:
+    url_pattern: "/pornstars/{model}"
+    url_pattern_pages: "/pornstars/{model}/{page}"
+    scraper: list_scraper
+    max_pages: 999
+    tip: "Download videos featuring model"
+    examples:
+      - "Bella Rose"
+      - "Kit Mercer"
+      - "Matty"
+      - "Naomi Swann"
+      - "Natalie Knight"
+      - "Pristine Edge"
+  studio:
+    url_pattern: "/channels/{studio}/recommended"
+    url_pattern_pages: "/channels/{studio}/{page}"
+    scraper: list_scraper
+    max_pages: 999
+    tip: "Download videos from studio"
+    examples:
+      - "Pure Taboo"
+      - "Brutal X"
+      - "My Family Pies"
+  search:
+    url_pattern: "/search/{search}"
+    url_pattern_pages: "/search/{search}?page={page}"
+    scraper: list_scraper
+    max_pages: 999
+    url_encoding_rules:
+      " ": "+"
+      "%20": "+"
+    tip: "Download videos from search results"
+    examples:
+      - "Vintage taboo"
+      - "Sister rough doggystyle"
+  tag:
+    url_pattern: "/categories/{tag}"
+    url_pattern_pages: "/categories/{tag}/{page}"
+    scraper: list_scraper
+    max_pages: 999
+    tip: "Download videos in tag"
+    examples:
+      - "18 Year Old"
+      - "Brutal Sex"
+      - "Creampie"
+      - "Homemade"
+
+
+scrapers:
+  list_scraper:
+    video_container:
+      selector:
+        - "div.pornstar-content"
+        - "div.pornstar-content__main"
+        - "body"
+    video_item:
+      selector: "div.thumb-list__item.video-thumb"
+      fields:
+        url:
+          selector: "a.video-thumb__image-container"
+          attribute: "href"
+        title:
+          selector: "a.video-thumb-info__name"
+          attribute: "title"
+
+  video_scraper:
+    title:
+      selector: "head title"
+      postProcess:
+        - replace:
+            - regex: "\\s*\\|\\s*xHamster\\s*"
+              with: ""
+    tags:
+      selector: "div[data-role='video-tags-list'] a.tag-96c3e:not([href*='/pornstars/']):not([href*='/channels/']):not([href*='/users/']) span.label-96c3e"
+    actors:
+      selector: "div[data-role='video-tags-list'] a.tag-96c3e[href*='/pornstars/'] img.image-9a750"
+      attribute: "alt"
+    studios:
+      selector: "div[data-role='video-tags-list'] a.tag-96c3e[href*='/channels/'] img.image-9a750"
+      attribute: "alt"

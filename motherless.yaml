@@ -1,0 +1,159 @@
+# sites/motherless.yaml
+
+name: Motherless
+shortcode: ml
+domain: Motherless.com
+base_url: 'https://motherless.com'
+selector_style: css
+no_overwrite: true
+use_selenium: true
+download:
+  method: 'yt-dlp'
+url_encoding_rules:
+  ' ': '+'
+  '%20': '+'
+name_suffix: ' - Motherless'
+# unique_name: true
+
+modes:
+  video:
+    url_pattern: '/{video}'
+    scraper: video_scraper
+    tip: 'Download video with identifier'
+    examples:
+      - '2ABC9F3'
+      - '8A76299'
+      - '848DBA0'
+  search:
+    url_pattern: '/search?term={search}&type=videos&range=0&size=0&sort=date'
+    url_pattern_pages: '/search?term={search}&type=videos&range=0&size=0&sort=date&page={page}'
+    max_pages: 999
+    scraper: list_scraper
+    tip: 'Download videos from search results'
+    examples:
+      - 'Rough doggystyle'
+      - 'Kelly Teal'
+  tag:
+    url_pattern: '/porn/{tag}/videos'
+    url_pattern_pages: '/porn/{tag}/videos&page={page}'
+    max_pages: 999
+    scraper: list_scraper
+    tip: 'Download videos under tag'
+    examples:
+      - 'Funny'
+      - 'Bisexual'
+      - 'Rough'
+      - 'Vintage'
+      - 'Teen'
+      - 'Blonde'
+  user:
+    url_pattern: '/u/{user}?t=v'
+    url_pattern_pages: '/u/{user}?t=v&page={page}'
+    max_pages: 999
+    scraper: user_uploads_scraper
+    tip: 'Download videos uploaded by user'
+    examples:
+      - 'Jade_Kink'
+      - 'bastared666'
+  group:
+    url_pattern: '/gv/{group}'
+    url_pattern_pages: '/gv/{group}?page={page}'
+    max_pages: 999
+    scraper: group_video_list_scraper
+    tip: 'Download videos in group'
+    examples:
+      - 'favorite_family_incest'
+      
+  group_code:
+    url_pattern: '/GV{group_code}'
+    url_pattern_pages: '/GV{group_code}?page={page}'
+    max_pages: 999
+    scraper: group_video_list_scraper
+    tip: 'Download videos in group with code'
+    examples:
+      - '91266e4'
+  tag:
+    url_pattern: '/term/videos/{tag}'
+    url_pattern_pages: '/term/videos/{term}?page={page}'
+    max_pages: 999
+    scraper: list_scraper
+    tip: 'Download videos with tag'
+    examples:
+      - 'Skullfuck'
+      - 'Bondage'
+      - 'Facial'
+      - 'Skinny'
+      - 'Blonde'
+
+scrapers:
+  video_scraper:
+    title:
+      selector: 'head > title'
+      postProcess:
+        - replace:
+            - regex: '\\s* \\| MOTHERLESS\\.COM ™\\s*'
+              with: ''
+
+    download_url:
+      selector: 'video#ml-main-video_html5_api, #player video'
+      attribute: 'src'
+    tags:
+      selector:
+        - 'div#ml-main-info .more-from-tags a'
+        - 'div.media-meta-tags h4 a.pop'
+
+  list_scraper:
+    video_container:
+      selector:
+        - '.content-wrapper .content-outer .content-inner'
+    video_item:
+      selector: '.thumb-container.video .desktop-thumb.video.medium a.img-container'
+      fields:
+        url:
+          attribute: 'href'
+        title:
+          attribute: 'title'
+
+  user_uploads_scraper:
+    video_container:
+      selector:
+        - '.content-inner'
+    video_item:
+      selector: '.thumb-container.video'
+      fields:
+        url:
+          selector: '.desktop-thumb.video.medium a.img-container'
+          attribute: 'href'
+        title:
+          selector: '.captions a.caption.title'
+          attribute: 'title'
+        duration:
+          selector: '.desktop-thumb.video.medium a.img-container span.size'
+        uploader:
+          selector: '.caption.left.misc a.uploader'
+        views:
+          selector: '.caption.left.misc span.hits span.value'
+
+  group_video_list_scraper:
+    video_container:
+      selector:
+        - '.content-inner'
+    video_item:
+      selector: '.thumb-container.video'
+      fields:
+        url:
+          selector: '.desktop-thumb.video.medium a.img-container'
+          attribute: 'href'
+        title:
+          selector: '.captions a.caption.title'
+          attribute: 'title'
+        duration:
+          selector: '.desktop-thumb.video.medium a.img-container span.size'
+        uploader:
+          selector: '.caption.left.misc a.uploader'
+        views:
+          selector: '.caption.left.misc span.hits span.value'
+        group_name:
+          selector: '.desktop-thumb.video.medium a.img-container'
+          attribute: 'href'
+          pattern: '/g/([^/]+)/'

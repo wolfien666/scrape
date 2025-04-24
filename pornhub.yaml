@@ -63,8 +63,9 @@ modes:
       - "TeamSkeet"
       - "Pure Taboo"
   search:
-    url_pattern: "/video/search?search={search}"
-    url_pattern_pages: "/video/search?search={search}&page={page}"
+    url_pattern: "/video/search?search={search}{ordering}{min_duration}"
+    url_pattern_pages: "/video/search?search={search}{ordering}{min_duration}&page={page}"
+#   url_pattern_pages: "/video/search?search={search}{ordering}{min_duration}&page={page}"
     scraper: list_scraper
     tip: "Download videos from search results"
     examples:
